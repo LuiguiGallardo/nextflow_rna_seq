@@ -24,6 +24,9 @@ workflow {
     salmonQuant(salmonIndex.out, read_pairs_ch, trinityAssembly.out)
     salmonMerge(trinityAssembly.out)
 
+    edgerAnalysis()
+    deseq2Analysis()
+
 }
 
 // Create Trinity 'de novo' assembly
@@ -77,13 +80,54 @@ process salmonQuant {
     """
 }
 
-// process salmonMerge {
-//     publishDir "${params.outdir}/salmonMerge"
+process salmonMerge {
+    publishDir "${params.outdir}/salmonMerge"
 
-//     input:
-//     path transcriptome
+    input:
+    path transcriptome
 
-//     """
-//     $TRINITY_HOME/util/abundance_estimates_to_matrix.pl --est_method salmon --gene_trans_map $transcriptome/Trinity.fasta.gene_trans_map  --name_sample_by_basedir --quant_files /home/luigui/Documents/nextflow_rna_seq/rawdata/quant_files.tsv
-//     """
-// }
+    output:
+    path "*"
+
+    """
+    $TRINITY_HOME/util/abundance_estimates_to_matrix.pl --est_method salmon --gene_trans_map $transcriptome/Trinity.fasta.gene_trans_map  --name_sample_by_basedir --quant_files /home/luigui/Documents/nextflow_rna_seq/rawdata/quant_files.tsv
+    """
+}
+
+process edgerAnalysis {
+    publishDir "${params.outdir}"
+
+    // input:
+    // path "salmonMerge/salmon.gene.counts.matrix"
+
+    output:
+    path edgeR
+
+    """
+    $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix ${params.outdir}/salmonMerge/salmon.gene.counts.matrix --method edgeR --samples_file ${params.samplesFile} --output edgeR
+
+    cd edgeR
+
+    $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix  ${params.outdir}/salmonMerge/salmon.gene.TMM.EXPR.matrix -P 1 -C 2 --samples ${params.samplesFile}
+
+    """
+}
+
+process deseq2Analysis {
+    publishDir "${params.outdir}"
+
+    // input:
+    // path "salmonMerge/salmon.gene.counts.matrix"
+
+    output:
+    path deseq2
+
+    """
+    $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix ${params.outdir}/salmonMerge/salmon.gene.counts.matrix --method DESeq2 --samples_file ${params.samplesFile} --output deseq2
+
+    cd deseq2
+
+    $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix  ${params.outdir}/salmonMerge/salmon.gene.TMM.EXPR.matrix -P 1 -C 2 --samples ${params.samplesFile}
+
+    """
+}

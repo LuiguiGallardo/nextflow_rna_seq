@@ -1,7 +1,7 @@
 # directories
 work/
 .nextflow/
-rawdata/
+#rawdata/
 
 # nexflow files
 .nextflow.log*
