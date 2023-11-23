@@ -18,7 +18,7 @@ log.info """\
 
 // Create Trinity 'de novo' assembly
 process trinityAssembly {
-    publishDir "${params.outdir}/trinityAssembly"
+    publishDir "${params.outdir}/trinityAssembly", mode: 'copy'
 
     input:
     path samplesFile
@@ -33,7 +33,7 @@ process trinityAssembly {
 
 // Create Salmon index
 process salmonIndex {
-    publishDir "${params.outdir}/salmonIndex"
+    publishDir "${params.outdir}/salmonIndex", mode: 'copy'
 
     input:
     path transcriptome
@@ -49,7 +49,7 @@ process salmonIndex {
 
 // Quantification with Salmon
 process salmonQuant {
-    publishDir "${params.outdir}/salmonQuant"
+    publishDir "${params.outdir}/salmonQuant", mode: 'copy'
 
     tag "$pair_id"
 
@@ -68,7 +68,7 @@ process salmonQuant {
 }
 
 process salmonMerge {
-    publishDir "${params.outdir}/salmonMerge"
+    publishDir "${params.outdir}/salmonMerge", mode: 'copy'
 
     input:
     path transcriptome

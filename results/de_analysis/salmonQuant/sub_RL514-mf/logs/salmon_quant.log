@@ -1,0 +1,43 @@
+[2023-11-23 11:01:41.641] [jointLog] [info] Fragment incompatibility prior below threshold.  Incompatible fragments will be ignored.
+[2023-11-23 11:01:41.641] [jointLog] [warning] 
+
+NOTE: It appears you are running salmon without the `--validateMappings` option.
+Mapping validation can generally improve both the sensitivity and specificity of mapping,
+with only a moderate increase in use of computational resources. 
+Mapping validation is planned to become a default option (i.e. turned on by default) in
+the next release of salmon.
+Unless there is a specific reason to do this (e.g. testing on clean simulated data),
+`--validateMappings` is generally recommended.
+
+[2023-11-23 11:01:41.641] [jointLog] [info] parsing read library format
+[2023-11-23 11:01:41.642] [jointLog] [info] There is 1 library.
+[2023-11-23 11:01:41.700] [jointLog] [info] Loading Quasi index
+[2023-11-23 11:01:41.700] [jointLog] [info] Loading 32-bit quasi index
+[2023-11-23 11:01:41.714] [jointLog] [info] done
+[2023-11-23 11:01:41.714] [jointLog] [info] Index contained 1,015 targets
+[2023-11-23 11:01:42.173] [fileLog] [info] 
+At end of round 0
+==================
+Observed 25000 total fragments (25000 in most recent round)
+
+[2023-11-23 11:01:42.173] [jointLog] [info] Computed 1,427 rich equivalence classes for further processing
+[2023-11-23 11:01:42.173] [jointLog] [info] Counted 11,230 total reads in the equivalence classes 
+[2023-11-23 11:01:42.173] [jointLog] [info] Number of fragments discarded because they have only dovetail (discordant) mappings : 364
+[2023-11-23 11:01:42.174] [jointLog] [warning] Only 11230 fragments were mapped, but the number of burn-in fragments was set to 5000000.
+The effective lengths have been computed using the observed mappings.
+
+[2023-11-23 11:01:42.174] [jointLog] [info] Mapping rate = 44.92%
+
+[2023-11-23 11:01:42.174] [jointLog] [info] finished quantifyLibrary()
+[2023-11-23 11:01:42.174] [jointLog] [info] Starting optimizer
+[2023-11-23 11:01:42.175] [jointLog] [info] Marked 0 weighted equivalence classes as degenerate
+[2023-11-23 11:01:42.175] [jointLog] [info] iteration = 0 | max rel diff. = 268.369
+[2023-11-23 11:01:42.191] [jointLog] [info] iteration = 100 | max rel diff. = 0.0353106
+[2023-11-23 11:01:42.199] [jointLog] [info] iteration = 172 | max rel diff. = 0.000650399
+[2023-11-23 11:01:42.199] [jointLog] [info] Finished optimizer
+[2023-11-23 11:01:42.199] [jointLog] [info] writing output 
+
+[2023-11-23 11:01:42.201] [jointLog] [warning] NOTE: Read Lib [[ sub_RL514-mf_R1.fastq.gz, sub_RL514-mf_R2.fastq.gz]] :
+
+Detected a *potential* strand bias > 1% in an unstranded protocol check the file: sub_RL514-mf/lib_format_counts.json for details
+

@@ -18,7 +18,7 @@ log.info """\
 
 
 process edgerAnalysis {
-    publishDir "${params.outdir}/edgeR"
+    publishDir "${params.outdir}", mode: 'move', overwrite: false
     
     input:
     path matrix
@@ -37,7 +37,7 @@ process edgerAnalysis {
 }
 
 process deseq2Analysis {
-    publishDir "${params.outdir}/deseq2"
+    publishDir "${params.outdir}", mode: 'move', overwrite: false
 
     input:
     path matrix

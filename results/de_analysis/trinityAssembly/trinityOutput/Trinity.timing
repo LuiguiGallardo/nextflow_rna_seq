@@ -1,0 +1,21 @@
+Statistics:
+===========
+Trinity Version:      Trinity-v2.8.5
+Compiler:             GCC
+Trinity Parameters:   --seqType fq --samples_file /home/luigui/Documents/nextflow_rna_seq/rawdata/samplesFile.tsv --max_memory 20G --CPU 16 --output trinityOutput
+Paired mode
+ Input data
+  Left.fasta    15 MByte
+  Right.fasta   15 MByte
+  Number of unique KMERs: 4251496
+  Number of reads:        249750 Output data
+  Trinity.fasta 0 MByte
+
+Runtime
+=======
+Start:       Thu Nov 23 10:56:59 PST 2023
+End:         Thu Nov 23 11:01:41 PST 2023
+Trinity   282 seconds
+  Inchworm (phase 1 - read clustering)  10 seconds
+  Chrysalis (phase 1 - read clustering) 264 seconds
+  Rest (phase 2 - parallel assembly)       8 seconds

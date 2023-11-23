@@ -127,7 +127,7 @@ workflow {
 }
 ```
 
-En bioinformática, un caso más práctico sería el siguiente:
+En bioinformática, un caso más real sería el siguiente:
 
 ```bash
 #!/usr/bin/env nextflow
@@ -157,16 +157,17 @@ workflow {
 
 En este ejemplo, la estructura básica se compone de las siguientes partes:
 
-Una definición de las variables, que se utilizan para almacenar los valores de entrada y salida del pipeline. En este caso, la variable params.input almacena la ruta del archivo de entrada de lecturas de secuenciación, y la variable params.output almacena la ruta del archivo de salida de las lecturas alineadas.
-Una definición de las tareas, que representan los pasos individuales que se ejecutan en el pipeline. En este caso, la tarea align alinea las lecturas de secuenciación al genoma de referencia.
+* Una definición de las variables, que se utilizan para almacenar los valores de entrada y salida del pipeline. En este caso, la variable params.input almacena la ruta del archivo de entrada de lecturas de secuenciación, y la variable params.output almacena la ruta del archivo de salida de las lecturas alineadas.
 
-Una ejecución del pipeline, que especifica el orden en el que se ejecutan las tareas. En este caso, la tarea align se ejecuta primero, y la salida de esta tarea se utiliza como entrada para la siguiente tarea.
+* Una definición de las tareas, que representan los pasos individuales que se ejecutan en el pipeline. En este caso, la tarea align alinea las lecturas de secuenciación al genoma de referencia.
+
+* Una ejecución del pipeline, que especifica el orden en el que se ejecutan las tareas. En este caso, la tarea align se ejecuta primero, y la salida de esta tarea se utiliza como entrada para la siguiente tarea.
 
 La estructura básica de un pipeline con Nextflow puede ser ampliada para incluir más tareas y opciones. Por ejemplo, se pueden añadir tareas adicionales para realizar el análisis de las lecturas alineadas, o se pueden especificar opciones adicionales para las tareas existentes.
 
 A continuación se presentan algunos ejemplos de cómo ampliar la estructura básica de un pipeline con Nextflow:
 
-Añadir más tareas:
+**Añadir más tareas:**
 
 ```bash
 // Definición de las variables
@@ -207,7 +208,7 @@ workflow {
 
 En este ejemplo, se añade una tarea adicional denominada count, que cuenta el número de lecturas alineadas para cada posición en el genoma de referencia.
 
-Especificar opciones adicionales:
+**Especificar opciones adicionales:**
 
 ```bash
 // Definición de las variables
@@ -240,7 +241,6 @@ Para obtener más información sobre la estructura de los pipelines con Nextflow
 
 ## Introducción al análisis de expresión diferencial
 
-añadir como instalar trinity y las utilidades para el curso
 El análisis de expresión diferencial (DE) se utiliza para responder a la pregunta: ¿cuáles son las características genómicas (genes, transcritos o exones) que se expresan de manera significativamente diferente entre grupos de muestras? Para lograr esto, necesitamos cuantificar las diferencias entre los datos de RNA-seq para cada muestra y grupo.
 
 Por ejemplo, en la siguiente imagen queremos comparar dos condiciones (A y B), para los genes 1 y 2; cada condición tiene 3 réplicas marcadas con colores diferentes. Podríamos observar que hay una expresión diferencial entre las condiciones: la Condición A tiene más lecturas para el gen 1, mientras que la Condición B tiene más lecturas para el gen 2. La expresión diferencial no implica que no haya expresión de uno o más genes en absoluto en una condición u otra, sino más bien que existe en una proporción diferencial considerando una secuencia de profundidad similar.

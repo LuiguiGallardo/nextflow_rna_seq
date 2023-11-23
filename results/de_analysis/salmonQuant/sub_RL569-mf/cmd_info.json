@@ -1,0 +1,10 @@
+{
+    "salmon_version": "0.13.1",
+    "threads": "1",
+    "libType": "U",
+    "index": "index",
+    "mates1": "sub_RL569-mf_R1.fastq.gz",
+    "mates2": "sub_RL569-mf_R2.fastq.gz",
+    "output": "sub_RL569-mf",
+    "auxDir": "aux_info"
+}

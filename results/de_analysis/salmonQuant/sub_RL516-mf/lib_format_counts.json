@@ -1,0 +1,25 @@
+{
+    "read_files": [
+        "sub_RL516-mf_R1.fastq.gz",
+        "sub_RL516-mf_R2.fastq.gz"
+    ],
+    "expected_format": "IU",
+    "compatible_fragment_ratio": 1.0,
+    "num_compatible_fragments": 11758,
+    "num_assigned_fragments": 11758,
+    "num_frags_with_concordant_consistent_mappings": 7167,
+    "num_frags_with_inconsistent_or_orphan_mappings": 4841,
+    "strand_mapping_bias": 0.2863122645458351,
+    "MSF": 0,
+    "OSF": 0,
+    "ISF": 5115,
+    "MSR": 0,
+    "OSR": 0,
+    "ISR": 2052,
+    "SF": 2522,
+    "SR": 2319,
+    "MU": 0,
+    "OU": 0,
+    "IU": 0,
+    "U": 0
+}
