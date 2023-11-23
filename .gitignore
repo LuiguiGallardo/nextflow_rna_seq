@@ -6,5 +6,5 @@ work/
 # nexflow files
 .nextflow.log*
 trinityrnaseq.v2.15.1.simg
-results/de_analysis/trinityAssembly/trinityOutput/jellyfish.kmers.fa
-results/de_analysis/trinityAssembly/trinityOutput/scaffolding_entries.sam
+./results/de_analysis/trinityAssembly/trinityOutput/jellyfish.kmers.fa
+./results/de_analysis/trinityAssembly/trinityOutput/scaffolding_entries.sam

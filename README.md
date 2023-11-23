@@ -252,12 +252,12 @@ Para conocer cuáles son las características genómicas con expresión diferenc
 
 ```mermaid
 graph
-    a[Raw data from RNA-seq] --> b(Quality control and preprocessing)
-    b --> c(Alignment to genome)
-    b --> d(Alignment to transcriptome)
+    a[Datos crudos RNA-Seq] --> b(Control de calidad y preprocesamiento)
+    b --> c(Alineamiento a genoma)
+    b --> d(Alineamiento a metatranscriptoma)
     c --> f
-    d --> f(Differential expression analysis)
-    f --> g(Functional analysis, enrichment analysis, etc.)
+    d --> f(Análisis de expresión diferencial)
+    f --> g(Análisis funcionales, de enriquecimiento, etc.)
 ```
 
 ### Datos prueba:
