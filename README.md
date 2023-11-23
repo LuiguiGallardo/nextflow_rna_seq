@@ -157,11 +157,11 @@ workflow {
 
 En este ejemplo, la estructura básica se compone de las siguientes partes:
 
-* Una definición de las variables, que se utilizan para almacenar los valores de entrada y salida del pipeline. En este caso, la variable params.input almacena la ruta del archivo de entrada de lecturas de secuenciación, y la variable params.output almacena la ruta del archivo de salida de las lecturas alineadas.
+* Definición de las variables, que se utilizan para almacenar los valores de entrada y salida del pipeline. En este caso, la variable params.input almacena la ruta del archivo de entrada de lecturas de secuenciación, y la variable params.output almacena la ruta del archivo de salida de las lecturas alineadas.
 
-* Una definición de las tareas, que representan los pasos individuales que se ejecutan en el pipeline. En este caso, la tarea align alinea las lecturas de secuenciación al genoma de referencia.
+* Definición de las tareas, que representan los pasos individuales que se ejecutan en el pipeline. En este caso, la tarea align alinea las lecturas de secuenciación al genoma de referencia.
 
-* Una ejecución del pipeline, que especifica el orden en el que se ejecutan las tareas. En este caso, la tarea align se ejecuta primero, y la salida de esta tarea se utiliza como entrada para la siguiente tarea.
+* Ejecución del pipeline, que especifica el orden en el que se ejecutan las tareas. En este caso, la tarea align se ejecuta primero, y la salida de esta tarea se utiliza como entrada para la siguiente tarea.
 
 La estructura básica de un pipeline con Nextflow puede ser ampliada para incluir más tareas y opciones. Por ejemplo, se pueden añadir tareas adicionales para realizar el análisis de las lecturas alineadas, o se pueden especificar opciones adicionales para las tareas existentes.
 
