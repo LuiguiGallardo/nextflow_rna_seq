@@ -1,4 +1,3 @@
-
 params.str = 'your name'
 
 process splitLetters {

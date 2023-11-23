@@ -46,7 +46,6 @@ nextflow -version
 
 ### Descarga directa
 
-
 1. **Requisitos previos:**
 Asegúrate de tener instalado Java en tu sistema, ya que Nextflow se ejecuta sobre la máquina virtual Java (JVM). Puedes descargar Java desde [Java SE Downloads](https://www.oracle.com/java/technologies/javase-downloads.html) o utilizar una alternativa como OpenJDK.
 
@@ -91,6 +90,154 @@ nextflow -version
 
 ¡Listo! Ahora tienes Nextflow instalado en tu sistema y estás listo para comenzar a trabajar con flujos de trabajo en bioinformática. Puedes encontrar más información y tutoriales en la [página oficial de Nextflow](https://www.nextflow.io/).
 
+### Primer pipeline con Nextflow
+
+
+La estructura básica de un pipeline con Nextflow es la siguiente:
+
+```bash
+// Definición de las variables
+params.str = 'your name'
+
+// Definición de las tareas
+process splitLetters {
+    output:
+    path 'chunk_*'
+
+    """
+    printf 'Hello ${params.str}' | split -b 100 - chunk_
+    """
+}
+
+process convertToUpper {
+    input:
+    path x
+
+    output:
+    stdout
+
+    """
+    cat $x | tr '[a-z]' '[A-Z]'
+    """
+}
+
+// Ejecución del pipeline
+workflow {
+    splitLetters | flatten | convertToUpper | view { it.trim() }
+}
+```
+
+En bioinformática, un caso más práctico sería el siguiente:
+
+```bash
+#!/usr/bin/env nextflow
+
+// Definición de las variables
+params.input = "input.fastq"
+params.output = "output"
+
+// Definición de las tareas
+task align {
+  input:
+    file input_reads from params.input
+  output:
+    file aligned_reads to params.output
+
+  script:
+    """
+    samtools align -f -q 20 -r 0 -o ${params.output} ${input_reads}
+    """
+}
+
+// Ejecución del pipeline
+workflow {
+  align(input_reads: params.input)
+}
+```
+
+En este ejemplo, la estructura básica se compone de las siguientes partes:
+
+Una definición de las variables, que se utilizan para almacenar los valores de entrada y salida del pipeline. En este caso, la variable params.input almacena la ruta del archivo de entrada de lecturas de secuenciación, y la variable params.output almacena la ruta del archivo de salida de las lecturas alineadas.
+Una definición de las tareas, que representan los pasos individuales que se ejecutan en el pipeline. En este caso, la tarea align alinea las lecturas de secuenciación al genoma de referencia.
+
+Una ejecución del pipeline, que especifica el orden en el que se ejecutan las tareas. En este caso, la tarea align se ejecuta primero, y la salida de esta tarea se utiliza como entrada para la siguiente tarea.
+
+La estructura básica de un pipeline con Nextflow puede ser ampliada para incluir más tareas y opciones. Por ejemplo, se pueden añadir tareas adicionales para realizar el análisis de las lecturas alineadas, o se pueden especificar opciones adicionales para las tareas existentes.
+
+A continuación se presentan algunos ejemplos de cómo ampliar la estructura básica de un pipeline con Nextflow:
+
+Añadir más tareas:
+
+```bash
+// Definición de las variables
+params.input = "input.fastq"
+params.output = "output"
+
+// Definición de las tareas
+task align {
+  input:
+    file input_reads from params.input
+  output:
+    file aligned_reads to params.output
+
+  script:
+    """
+    samtools align -f -q 20 -r 0 -o ${params.output} ${input_reads}
+    """
+}
+
+task count {
+  input:
+    file aligned_reads from align.aligned_reads
+  output:
+    file counts to params.output
+
+  script:
+    """
+    samtools view -F 4 -c ${params.output} > ${params.output}.counts
+    """
+}
+
+// Ejecución del pipeline
+workflow {
+  align(input_reads: params.input)
+  count(aligned_reads: align.aligned_reads)
+}
+```
+
+En este ejemplo, se añade una tarea adicional denominada count, que cuenta el número de lecturas alineadas para cada posición en el genoma de referencia.
+
+Especificar opciones adicionales:
+
+```bash
+// Definición de las variables
+params.input = "input.fastq"
+params.output = "output"
+
+// Definición de las tareas
+task align {
+  input:
+    file input_reads from params.input
+  output:
+    file aligned_reads to params.output
+
+  script:
+    """
+    samtools align -f -q 20 -r 0 -o ${params.output} ${input_reads}
+    """
+}
+
+// Ejecución del pipeline
+workflow {
+  align(input_reads: params.input,
+        flags: "-q 30")
+}
+```
+
+En este ejemplo, se especifica la opción -q 30 para la tarea align, lo que indica que las lecturas de secuenciación deben tener una calidad mínima de 30.
+
+Para obtener más información sobre la estructura de los pipelines con Nextflow, se puede consultar la documentación oficial: https://www.nextflow.io/docs/latest/.
+
 ## Introducción al análisis de expresión diferencial
 
 añadir como instalar trinity y las utilidades para el curso
@@ -113,216 +260,160 @@ graph
     f --> g(Functional analysis, enrichment analysis, etc.)
 ```
 
-### Ejemplo:
+### Datos prueba:
 
 Para este tutorial, trabajaremos con seis muestras: tres para el grupo de control y tres para el grupo de estudio. Estos son sus metadatos:
 
-|group|sample|R1|R2|
-|-|-|-|-|
-|dextrose|D1|D1_R1.fastq.gz|D1_R2.fastq.gz|
-|dextrose|D2|D2_R1.fastq.gz|D2_R2.fastq.gz|
-|dextrose|D3|D3_R1.fastq.gz|D3_R2.fastq.gz|
-|impranil|I1|I1_R1.fastq.gz|I1_R2.fastq.gz|
-|impranil|I2|I2_R1.fastq.gz|I2_R2.fastq.gz|
-|impranil|I3|I3_R1.fastq.gz|I3_R2.fastq.gz|
+|grupo|muestra|
+|-|-|
+|Control|sub_RL514-mf|
+|Control|sub_RL516-mf|
+|Control|sub_RL569-mf|
+|NASH|sub_RL509-mf|
+|NASH|sub_RL511-mf|
+|NASH|sub_RL518-mf|
 
-### Calcular expresión con RSEM
-En este ejemplo, vamos a alinear nuestros datos de RNA-seq con el genoma de referencia utilizando RSEM, pero este método también se podría utilizar con un transcriptoma. Este algoritmo permite manejar lecturas que se asignan a múltiples genes o isoformas, un desafío común en los datos de RNA-seq
+### Instalación de Trinity
+
+Para este tutorial utilizaremos Trinity, por lo cual lo necesitamos instalar así como sus dependencias. Esto se puede hacer con Conda:
 
 ```bash
-rsem-calculate-expression --star --star-gzipped-read-file --append-names -p 60 --paired-end D1_1.fastq.gz D1_2.fastq.gz genoma_A3I1_rsem D1_rsem
-
-rsem-calculate-expression --star --star-gzipped-read-file --append-names -p 60 --paired-end D2_1.fastq.gz D2_2.fastq.gz genoma_A3I1_rsem D2_rsem
-
-rsem-calculate-expression --star --star-gzipped-read-file --append-names -p 60 --paired-end D3_1.fastq.gz D3_2.fastq.gz genoma_A3I1_rsem D3_rsem
-
-rsem-calculate-expression --star --star-gzipped-read-file --append-names -p 60 --paired-end I1_1.fastq.gz I1_2.fastq.gz genoma_A3I1_rsem I1_rsem
-
-rsem-calculate-expression --star --star-gzipped-read-file --append-names -p 60 --paired-end I2_1.fastq.gz I2_2.fastq.gz genoma_A3I1_rsem I2_rsem
-
-rsem-calculate-expression --star --star-gzipped-read-file --append-names -p 60 --paired-end I3_1.fastq.gz I3_2.fastq.gz genoma_A3I1_rsem I3_rsem
+conda install -c bioconda trinity salmon fastqc
 ```
 
-Este un ejemplo de la salida: 
+### Pipeline de expresión diferencial con Trinity
 
-| transcript_id | gene_id    | length | effective_length | expected_count | TPM   | FPKM  | IsoPct |
-| ------------- | ---------- | ------ | ---------------- | -------------- | ----- | ----- | ------ |
-| gene_00001.t1 | gene_00001 | 1053   | 856.86           | 52             | 9.77  | 10.88 | 100    |
-| gene_00002.t1 | gene_00002 | 2455   | 2258.86          | 9              | 0.64  | 0.71  | 100    |
-| gene_00003.t1 | gene_00003 | 2349   | 2152.86          | 351            | 26.24 | 29.24 | 100    |
-| gene_00004.t1 | gene_00004 | 2002   | 1805.86          | 332            | 29.59 | 32.97 | 100    |
-| gene_00005.t1 | gene_00005 | 1506   | 1309.86          | 2              | 0.25  | 0.27  | 100    |
-| gene_00006.t1 | gene_00006 | 1053   | 856.86           | 0              | 0     | 0     | 0      |
-| gene_00007.t1 | gene_00007 | 3840   | 3643.86          | 1              | 0.04  | 0.05  | 100    |
-| gene_00008.t1 | gene_00008 | 2751   | 2554.86          | 5              | 0.31  | 0.35  | 100    |
-| gene_00009.t1 | gene_00009 | 480    | 283.91           | 1              | 0.57  | 0.63  | 100    |
+```bash
+#!/usr/bin/env nextflow
 
-### Expresión diferencial DESeq2
+nextflow.enable.dsl = 2
 
-Hay muchos algoritmos utilizados para realizar análisis de expresión diferencial, uno de los más utilizados es DESeq2. Podemos usar el paquete R, para instalarlo ejecutamos lo siguiente dentro de R:
+// Define input parameters
+params.reads = '/home/luigui/Documents/nextflow_rna_seq/rawdata/*_R{1,2}.fastq.gz'
+params.samplesFile = '/home/luigui/Documents/nextflow_rna_seq/rawdata/samplesFile.tsv'
+params.outdir = '/home/luigui/Documents/nextflow_rna_seq/results/de_analysis'
 
-```R
-#### Instalation of BiocManager, DESeq2, apeglm
-#### Run only once in your computer
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("DESeq2")
-BiocManager::install("apeglm")
+log.info """\
+        R N A S E Q  P I P E L I N E    
+        ===================================
+        reads        : ${params.reads}
+        outdir       : ${params.outdir}
+        samplesFile :   ${params.samplesFile}
+        """
+        .stripIndent()
 
-#### Optional libraries to generate graphs: instalation of ggplot2, pheatmap and RColorBrewer
-#### Run only once in your computer
-install.packages("ggplot2")
-install.packages("pheatmap")
-install.packages("RColorBrewer")
+// Create Trinity 'de novo' assembly
+process trinityAssembly {
+    publishDir "${params.outdir}/trinityAssembly"
 
-#### Load libraries
-library(DESeq2)
-library(apeglm)
+    input:
+    path samplesFile
 
-#### Load optional libraries
-library(ggplot2)
-library(pheatmap)
-library(RColorBrewer)
+    output:
+    path "trinityOutput"
+
+    """
+    Trinity --seqType fq --samples_file ${params.samplesFile} --max_memory 20G --CPU 16 --output trinityOutput
+    """
+}
+
+// Create Salmon index
+process salmonIndex {
+    publishDir "${params.outdir}/salmonIndex"
+
+    input:
+    path transcriptome
+
+    output:
+    path 'index'
+
+    script:
+    """
+    salmon index --threads $task.cpus -t $transcriptome/Trinity.fasta -i index
+    """
+}
+
+// Quantification with Salmon
+process salmonQuant {
+    publishDir "${params.outdir}/salmonQuant"
+
+    tag "$pair_id"
+
+    input:
+    path index
+    tuple val(pair_id), path(reads)
+    path transcriptome
+
+    output:
+    path pair_id
+
+    script:
+    """
+    salmon quant --threads $task.cpus --libType=U -i $index -1 ${reads[0]} -2 ${reads[1]} -o $pair_id
+    """
+}
+
+process salmonMerge {
+    publishDir "${params.outdir}/salmonMerge"
+
+    input:
+    path transcriptome
+
+    output:
+    path "*"
+
+    """
+    $TRINITY_HOME/util/abundance_estimates_to_matrix.pl --est_method salmon --gene_trans_map $transcriptome/Trinity.fasta.gene_trans_map  --name_sample_by_basedir --quant_files /home/luigui/Documents/nextflow_rna_seq/rawdata/quant_files.tsv
+    """
+}
+
+process edgerAnalysis {
+    publishDir "${params.outdir}"
+
+    // input:
+    // path "salmonMerge/salmon.gene.counts.matrix"
+
+    output:
+    path edgeR
+
+    """
+    $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix ${params.outdir}/salmonMerge/salmon.gene.counts.matrix --method edgeR --samples_file ${params.samplesFile} --output edgeR
+
+    cd edgeR
+
+    $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix  ${params.outdir}/salmonMerge/salmon.gene.TMM.EXPR.matrix -P 1 -C 2 --samples ${params.samplesFile}
+
+    """
+}
+
+process deseq2Analysis {
+    publishDir "${params.outdir}"
+
+    // input:
+    // path "salmonMerge/salmon.gene.counts.matrix"
+
+    output:
+    path deseq2
+
+    """
+    $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix ${params.outdir}/salmonMerge/salmon.gene.counts.matrix --method DESeq2 --samples_file ${params.samplesFile} --output deseq2
+
+    cd deseq2
+
+    $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix  ${params.outdir}/salmonMerge/salmon.gene.TMM.EXPR.matrix -P 1 -C 2 --samples ${params.samplesFile}
+
+    """
+}
+
+workflow {
+    read_pairs_ch = channel.fromFilePairs( params.reads, checkIfExists: true )
+
+    trinityAssembly(params.samplesFile)
+    salmonIndex(trinityAssembly.out)
+    salmonQuant(salmonIndex.out, read_pairs_ch, trinityAssembly.out)
+    salmonMerge(trinityAssembly.out)
+
+    edgerAnalysis()
+    deseq2Analysis()
+}
 ```
-
-Después, importamos la matriz de recuento (generada con RSEM) y el archivo de metadatos con la correspondencia muestra-grupo. Este es el encabezado de nuestra matriz de `RSEM.genes.counts.matrix`:
-
-|            | D1_rsem | D2_rsem | D3_rsem | I1_rsem | I2_rsem | I3_rsem |
-| ---------- | ------- | ------- | ------- | ------- | ------- | ------- |
-| gene_09063 | 174     | 131     | 147     | 10      | 9       | 12      |
-| gene_12878 | 32      | 44      | 37      | 18      | 20      | 22      |
-| gene_12066 | 11      | 9       | 6       | 1       | 1       | 0       |
-| gene_12117 | 68      | 80      | 73      | 27      | 29      | 17      |
-| gene_00424 | 662     | 658     | 1033    | 473     | 493     | 438     |
-| gene_06101 | 70      | 65      | 80      | 11      | 9       | 8       |
-| gene_08260 | 518     | 590     | 615     | 180     | 178     | 211     |
-| gene_06056 | 23      | 17      | 26      | 9       | 6       | 2       |
-| gene_06489 | 37      | 33      | 31      | 369     | 353     | 365     |
-
-Y nuestro `metadata.tsv`
-
-||group|
-|-|-|
-|dextrosa_rep1|dextrosa|
-|dextrosa_rep2|dextrosa|
-|dextrosa_rep3|dextrosa|
-|impranil_rep1|impranil|
-|impranil_rep2|impranil|
-|impranil_rep3|impranil|
-
-Ahora, dentro de R, ejecutamos el código a continuación para ingresar nuestros datos de ejemplo:
-
-```R
-rsem_count <- as.matrix(read.delim(file = "RSEM.gene.counts.matrix",
-    sep="\t",
-    row.names = 1))
-
-column_data <- read.csv(file = "metadata.tsv",
-    sep = "\t")
-
-deseq_data_set <- DESeqDataSetFromMatrix(countData = rsem_count,
-    colData = column_data,
-    design = ~group)
-
-deseq_data_set$group <- relevel(deseq_data_set$group,
-    ref = "dextrosa")
-```
-
-Como recomendación, se recomienda remover los transcritos con baja abundancia:
-
-```R
-keep <- rowSums(counts(deseq_data_set)) >= 10
-
-deseq_data_set <- deseq_data_set[keep,]
-```
-
-Con la matrix filtrada, podemos iniciar con el análisis de expresión diferencial:
-
-```R
-dif_expression_deseq_data_set <- DESeq(deseq_data_set)
-
-res_dif_expression_deseq_data_set <- results(dif_expression_deseq_data_set)
-
-summary_dif_expression_deseq_data_set <- summary(res_dif_expression_deseq_data_set)
-```
-
-Podemos filtrar los resultados, como el *p-value* y *log2 fold change*:
-
-We could filter the results, like the p-value and log2 fold change:
-
-```R
-res05_dif_expression_deseq_data_set <- results(dif_expression_deseq_data_set,
-    alpha=0.05)
-
-summary_dif_expression_deseq_data_set <- summary(res05_dif_expression_deseq_data_set)
-```
-
-Finalmente para exportar la tabla, corremos:
-
-```R
-write.table(as.data.frame(res05_dif_expression_deseq_data_set),sep = '\t' ,
-    file="results.tsv")
-```
-
-### Gráficas
-Después de obtener la matriz final de DESeq2, podemos general diversas gráficas. Por ejemplo, para general una gráfica de volcán (*Volcano plot*) corremos lo siguiente:
-
-```R
-png("volcano_plot.png")
-
-plotMA(res05_dif_expression_deseq_data_set,
-    ylim=c(-10,10))
-
-dev.off()
-```
-
-<img src="./01_example_files/volcano_plot.png" alt="volcano_plot" style="zoom:100%;" />
-
-Para generar una gráfica individual (una sola característica) corremos:
-
-```R
-png("TRINITY_DN1097_c0_g1.png")
-
-plotCounts(dif_expression_deseq_data_set,
-    gene= "TRINITY_DN1097_c0_g1",
-    intgroup="group")
-
-dev.off()
-```
-
-<img src="./01_example_files/TRINITY_DN1097_c0_g1.png" alt="TRINITY_DN1097_c0_g1" style="zoom:100%;" />
-
-Podríamos generar un mapa de calor con una selección de los transcritos. En el ejemplo a continuación, obtenemos los primeros 20 transcritos y los representamos en un mapa de calor:
-
-```R
-select <- order(rowMeans(counts(dif_expression_deseq_data_set,normalized=TRUE)),
-    decreasing=TRUE)[1:20]
-
-df <- as.data.frame(colData(dif_expression_deseq_data_set)[,c("X","group")])
-
-png("heatmap.png")
-
-pheatmap(assay(dif_expression_deseq_data_set)[select,],
-    cluster_rows=FALSE,
-    show_rownames=FALSE,
-    cluster_cols=FALSE,
-    annotation_col=df)
-
-dev.off()
-```
-
-<img src="./01_example_files/heatmap.png" alt="heatmap" style="zoom:100%;" />
-
-Para generar un PCA:
-
-```R
-vsd <- vst(dif_expression_deseq_data_set, blind=FALSE)
-
-png("PCA.png")
-
-plotPCA(vsd, intgroup=c("group"))
-
-dev.off()
-```
-
-<img src="./01_example_files/PCA.png" alt="PCA" style="zoom:100%;" />

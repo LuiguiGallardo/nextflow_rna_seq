@@ -1,1 +1,1 @@
-/home/luigui/Documents/nextflow_rna_seq/work/2c/c9f1cae6bc140ebd54018031eac5f8/salmon.gene.TPM.not_cross_norm.runTMM.R
+/home/luigui/Documents/nextflow_rna_seq/work/27/3e728b76736f39beb799f7493892bf/salmon.gene.TPM.not_cross_norm.runTMM.R
