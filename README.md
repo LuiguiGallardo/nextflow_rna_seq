@@ -34,6 +34,9 @@ Utiliza el siguiente comando para instalar Nextflow desde el canal de Conda Bioc
 conda install -c bioconda nextflow
 ```
 
+AGREGAR SINGULARITY
+conda install -c conda-forge singularity
+
 1. **Verificación de la instalación:**
 Verifica que Nextflow se haya instalado correctamente ejecutando:
 
@@ -89,6 +92,8 @@ nextflow -version
 ¡Listo! Ahora tienes Nextflow instalado en tu sistema y estás listo para comenzar a trabajar con flujos de trabajo en bioinformática. Puedes encontrar más información y tutoriales en la [página oficial de Nextflow](https://www.nextflow.io/).
 
 ## Introducción al análisis de expresión diferencial
+
+añadir como instalar trinity y las utilidades para el curso
 El análisis de expresión diferencial (DE) se utiliza para responder a la pregunta: ¿cuáles son las características genómicas (genes, transcritos o exones) que se expresan de manera significativamente diferente entre grupos de muestras? Para lograr esto, necesitamos cuantificar las diferencias entre los datos de RNA-seq para cada muestra y grupo.
 
 Por ejemplo, en la siguiente imagen queremos comparar dos condiciones (A y B), para los genes 1 y 2; cada condición tiene 3 réplicas marcadas con colores diferentes. Podríamos observar que hay una expresión diferencial entre las condiciones: la Condición A tiene más lecturas para el gen 1, mientras que la Condición B tiene más lecturas para el gen 2. La expresión diferencial no implica que no haya expresión de uno o más genes en absoluto en una condición u otra, sino más bien que existe en una proporción diferencial considerando una secuencia de profundidad similar.

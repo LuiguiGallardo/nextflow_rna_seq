@@ -1,0 +1,8 @@
+# directories
+work/
+.nextflow/
+rawdata/
+
+# nexflow files
+.nextflow.log*
+trinityrnaseq.v2.15.1.simg
